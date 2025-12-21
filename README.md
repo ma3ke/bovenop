@@ -39,8 +39,31 @@ Within the interface, the following controls are currently available.
 ## Future work and contributions
 
 There is a lot that could be improved, but it does the basic job I created it
-for. I think simple navigation and selection-based collapsing/expanding
-(lowercase `c` and `e`) would be pleasant.
+for. 
+
+- I think simple navigation and selection-based collapsing/expanding
+  (lowercase `c` and `e`) would be pleasant.
+- Scrolling through longer listes of processes.
+- Selecting between chronological and reverse-chronological representations
+  would be useful, especially if new processes slowly push old ones outside
+  of the scroll view.
+- An explicit marker for dead processes would be good. The current way of
+  showing wilted processes is through dimming, which is not very visible under
+  some circumstances.
+- Rudimentary color selection support to provide better visibility for other
+  users' needs.
+- A marker showing the highest recorded peak memory, for example, could be
+  useful.
+- Regular expression matching on process names.
+- The ability to provide a list of accepted process names.
+- Flags for setting the width and presence or absence of some categories. For
+  instance, you may want to just see memory and CPU information, with an extra
+  wide memory chart.
+
+It must be noted, however, that none of these features may become a reality.
+This is just a tool I wrote for myself to do a particular thing, after all :)
+
+### Contributions
 
 I very much welcome input from people based actual needs in the form of issues,
 emails, or fedi posts. As with many of my projects, I appreciate and welcome
