@@ -48,5 +48,9 @@ code contributions, provided we have had some prior discussion about it where
 we briefly discuss the design of any non-trivial changes. Additional contact
 options can be found on my site.
 
+## License
+
+This project is licensed under GPL-3.0, see LICENSE.
+
 [image]: bovenop.png
 [thread]: https://hachyderm.io/@ma3ke/115757953511991333
