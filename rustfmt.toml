@@ -1,0 +1,5 @@
+style_edition = "2024"
+merge_derives = false
+single_line_let_else_max_width = 80
+use_field_init_shorthand = true
+use_small_heuristics = "Max"

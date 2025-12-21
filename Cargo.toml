@@ -1,0 +1,13 @@
+[package]
+name = "bovenop"
+authors = ["Marieke Westendorp <ma3ke.cyber@gmail.com>"]
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+chrono = { version = "0.4.42", default-features = false, features = ["clock"] }
+clap = { version = "4.5.53", features = ["derive"] }
+ratatui = "0.29.0"
+size = "0.5.0"
+sysinfo = "0.37.2"
