@@ -18,8 +18,8 @@ See also [my thread][thread] about this program.
 
 You know the drill, probably, but you can install it with cargo.
 
-```rust
-cargo install --locked --git https://github.com/ma3ke/bovenop
+```console
+cargo install bovenop
 ```
 
 ## Usage
