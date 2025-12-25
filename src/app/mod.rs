@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::io;
 use std::time::Duration;
 
 use anyhow::Context;
@@ -60,7 +61,10 @@ impl Application {
         self.is_running = false;
     }
 
-    fn process_frame<B: Backend>(&mut self, terminal: &mut Terminal<B>) -> anyhow::Result<()> {
+    fn process_frame<B: Backend<Error = io::Error>>(
+        &mut self,
+        terminal: &mut Terminal<B>,
+    ) -> anyhow::Result<()> {
         self.sys.refresh_specifics(self.refreshes);
 
         // TODO: Currently not loving the way we find processes (also want to do it by program
@@ -93,12 +97,7 @@ impl Application {
             }
         });
 
-        // FIXME: For now I'm panicking here on fail, as I do not like the need for
-        // where B::Error: Error + Sync + Send + 'static
-        // in the method signature.
-        terminal
-            .draw(|frame| draw::draw_entries(&self.entries, frame))
-            .expect("failed to draw frame");
+        terminal.draw(|frame| draw::draw_entries(&self.entries, frame))?;
 
         Ok(())
     }
