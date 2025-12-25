@@ -6,7 +6,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Axis, Chart, Dataset, GraphType, Paragraph, Widget};
 use size::Size;
 
-use crate::entry::{Entry, EntryLayout, EntryState};
+use crate::app::entry::{Entry, EntryLayout, EntryState};
 
 mod colors {
     use ratatui::style::Color;

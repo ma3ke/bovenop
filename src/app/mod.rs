@@ -11,7 +11,10 @@ use size::Size;
 use sysinfo::{ProcessRefreshKind, RefreshKind};
 
 use crate::Config;
-use crate::entry::{Entry, EntryLayout, EntryState};
+use crate::app::entry::{Entry, EntryLayout, EntryState};
+
+mod draw;
+mod entry;
 
 pub struct Application {
     config: Config,
