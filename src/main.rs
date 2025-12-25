@@ -3,6 +3,7 @@ use clap::Parser;
 use crate::app::Application;
 
 mod app;
+mod draw;
 mod entry;
 
 /// Observe memory, cpu, and disk I/O for processes matching the provided name.
