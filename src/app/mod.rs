@@ -65,12 +65,11 @@ impl Application {
         self.sys.refresh_specifics(self.refreshes);
 
         // TODO: Currently not loving the way we find processes (also want to do it by program
-        // arguments, path, etc). Also, the way we determine whether a process is dead is a bit
-        // weird in my opinion.
+        // arguments, path, etc).
         let processes = self.sys.processes_by_name(self.config.name.as_ref());
+
         let mut alive = Vec::new();
         for process in processes {
-            // Add new information to the entry.
             let pid = process.pid().as_u32();
 
             // For a new process, we first create a new entry.
