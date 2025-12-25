@@ -112,31 +112,7 @@ impl Application {
                 })
                 .context("failed to draw frame")?;
 
-            // TODO: I hate this so much. The input handling is very poor here.
-            // Also: known issue, when you just press a bunch of buttons, the updates will
-            // happen more frequently. That is a problem for the CPU sampling, actually.
-            // Ultimately, I want a thread that does all of the system monitoring for me.
-            if event::poll(Duration::from_millis(200)).context("failed to poll event")? {
-                match event::read().context("failed to read event")? {
-                    Event::Key(ke)
-                        if ke.code == KeyCode::Char('q')
-                            || (ke.code == KeyCode::Char('c')
-                                && ke.modifiers.contains(KeyModifiers::CONTROL)) =>
-                    {
-                        self.stop();
-                    }
-                    Event::Key(ke) if ke.code == KeyCode::Char('r') => {
-                        self.entries.clear();
-                    }
-                    Event::Key(ke) if ke.code == KeyCode::Char('E') => {
-                        self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Expanded);
-                    }
-                    Event::Key(ke) if ke.code == KeyCode::Char('C') => {
-                        self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Condensed);
-                    }
-                    _ => {}
-                }
-            }
+            self.handle_events()?;
         }
 
         ratatui::restore();
@@ -146,6 +122,36 @@ impl Application {
 
     pub fn stop(&mut self) {
         self.is_running = false;
+    }
+
+    fn handle_events(&mut self) -> anyhow::Result<()> {
+        // TODO: I hate this so much. The input handling is very poor here.
+        // Also: known issue, when you just press a bunch of buttons, the updates will
+        // happen more frequently. That is a problem for the CPU sampling, actually.
+        // Ultimately, I want a thread that does all of the system monitoring for me.
+        if event::poll(Duration::from_millis(200)).context("failed to poll event")? {
+            match event::read().context("failed to read event")? {
+                Event::Key(ke)
+                    if ke.code == KeyCode::Char('q')
+                        || (ke.code == KeyCode::Char('c')
+                            && ke.modifiers.contains(KeyModifiers::CONTROL)) =>
+                {
+                    self.stop();
+                }
+                Event::Key(ke) if ke.code == KeyCode::Char('r') => {
+                    self.entries.clear();
+                }
+                Event::Key(ke) if ke.code == KeyCode::Char('E') => {
+                    self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Expanded);
+                }
+                Event::Key(ke) if ke.code == KeyCode::Char('C') => {
+                    self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Condensed);
+                }
+                _ => {}
+            }
+        }
+
+        Ok(())
     }
 }
 
