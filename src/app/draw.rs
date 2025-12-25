@@ -1,5 +1,9 @@
+use std::collections::BTreeMap;
+
 use chrono::Local;
+use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout};
+use ratatui::prelude::{Buffer, Rect};
 use ratatui::style::{Modifier, Stylize};
 use ratatui::symbols::Marker;
 use ratatui::text::{Line, Span};
@@ -7,6 +11,29 @@ use ratatui::widgets::{Axis, Chart, Dataset, GraphType, Paragraph, Widget};
 use size::Size;
 
 use crate::app::entry::{Entry, EntryLayout, EntryState};
+
+pub fn draw_entries(entries: &BTreeMap<u32, Entry>, frame: &mut Frame) {
+    let entry_heights = entries.values().map(|e| 1 + e.layout.chart_height());
+
+    let n_visible_entries = {
+        let mut n = 0;
+        let mut total_height = 0;
+        for h in entry_heights.clone() {
+            total_height += h;
+            if total_height > frame.area().height {
+                break;
+            }
+            n += 1;
+        }
+        n
+    };
+    let vertical =
+        Layout::vertical(entry_heights.take(n_visible_entries).map(|h| Constraint::Length(h)));
+    let rows = vertical.split(frame.area());
+    for (&row, entry) in rows.into_iter().zip(entries.values()) {
+        frame.render_widget(entry, row);
+    }
+}
 
 mod colors {
     use ratatui::style::Color;
@@ -21,7 +48,7 @@ mod colors {
 }
 
 impl Widget for &Entry {
-    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+    fn render(self, area: Rect, buf: &mut Buffer) {
         let layout = Layout::vertical([
             Constraint::Length(1),                          // Entry header.
             Constraint::Length(self.layout.chart_height()), // Info, charts.

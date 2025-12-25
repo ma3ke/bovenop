@@ -3,10 +3,9 @@ use std::time::Duration;
 
 use anyhow::Context;
 use chrono::Local;
+use ratatui::Terminal;
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyModifiers};
-use ratatui::layout::{Constraint, Layout};
 use ratatui::prelude::Backend;
-use ratatui::{Frame, Terminal};
 use size::Size;
 use sysinfo::{ProcessRefreshKind, RefreshKind};
 
@@ -109,32 +108,11 @@ impl Application {
         // FIXME: For now I'm panicking here on fail, as I do not like the need for
         // where B::Error: Error + Sync + Send + 'static
         // in the method signature.
-        terminal.draw(|frame| self.draw(frame)).expect("failed to draw frame");
+        terminal
+            .draw(|frame| draw::draw_entries(&self.entries, frame))
+            .expect("failed to draw frame");
 
         Ok(())
-    }
-
-    fn draw(&mut self, frame: &mut Frame) {
-        let entry_heights = self.entries.values().map(|e| 1 + e.layout.chart_height());
-
-        let n_visible_entries = {
-            let mut n = 0;
-            let mut total_height = 0;
-            for h in entry_heights.clone() {
-                total_height += h;
-                if total_height > frame.area().height {
-                    break;
-                }
-                n += 1;
-            }
-            n
-        };
-        let vertical =
-            Layout::vertical(entry_heights.take(n_visible_entries).map(|h| Constraint::Length(h)));
-        let rows = vertical.split(frame.area());
-        for (&row, entry) in rows.into_iter().zip(self.entries.values()) {
-            frame.render_widget(entry, row);
-        }
     }
 
     fn handle_events(&mut self) -> anyhow::Result<()> {
