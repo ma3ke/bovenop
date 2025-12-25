@@ -17,26 +17,33 @@ use crate::entry::{Entry, EntryLayout, EntryState};
 
 pub struct Application {
     config: Config,
+    is_running: bool,
+
+    // TODO: Actually, this is maybe a silly data structure, here, since new pid's should only
+    // be appended, not inserted in between.
+    entries: BTreeMap<u32, Entry>, // BTreeSet?
 }
 
 impl Application {
     pub fn new(config: Config) -> Self {
-        Self { config }
+        Self { config, is_running: false, entries: BTreeMap::new() }
     }
 
     pub fn start(&mut self) -> anyhow::Result<()> {
+        self.is_running = true;
+
         // Set up the system monitoring.
         let refreshes = RefreshKind::nothing().with_processes(
             ProcessRefreshKind::nothing().with_memory().with_cpu().with_disk_usage(),
         );
         let mut sys = sysinfo::System::new_with_specifics(refreshes);
 
-        // TODO: Actually, this is maybe a silly data structure, here, since new pid's should only
-        // be appended, not inserted in between.
-        let mut entries = BTreeMap::<u32, Entry>::new(); // BTreeSet?
-
         let mut terminal = ratatui::init();
         loop {
+            if !self.is_running {
+                break;
+            }
+
             sys.refresh_specifics(refreshes);
             // TODO: Currently not loving the way we find processes (also want to do it by program
             // arguments, path, etc). Also, the way we determine whether a process is dead is a bit
@@ -49,7 +56,7 @@ impl Application {
 
                 // For a new process, we first create a new entry.
                 // If we already know this process, return its entry.
-                let entry = entries.entry(pid).or_insert_with(|| Entry {
+                let entry = self.entries.entry(pid).or_insert_with(|| Entry {
                     state: EntryState::Alive,
                     name: process.name().to_string_lossy().to_string(),
                     // TODO: Reconsider, bit weird but it works for what we want to do.
@@ -73,7 +80,7 @@ impl Application {
             }
 
             // Mark entries for which no process information is available anymore as dead.
-            entries.iter_mut().for_each(|(pid, entry)| {
+            self.entries.iter_mut().for_each(|(pid, entry)| {
                 if !alive.contains(pid) {
                     entry.die()
                 }
@@ -81,7 +88,7 @@ impl Application {
 
             terminal
                 .draw(|frame| {
-                    let entry_heights = entries.values().map(|e| 1 + e.layout.chart_height());
+                    let entry_heights = self.entries.values().map(|e| 1 + e.layout.chart_height());
 
                     let n_visible_entries = {
                         let mut n = 0;
@@ -99,7 +106,7 @@ impl Application {
                         entry_heights.take(n_visible_entries).map(|h| Constraint::Length(h)),
                     );
                     let rows = vertical.split(frame.area());
-                    for (&row, entry) in rows.into_iter().zip(entries.values()) {
+                    for (&row, entry) in rows.into_iter().zip(self.entries.values()) {
                         frame.render_widget(entry, row);
                     }
                 })
@@ -116,16 +123,16 @@ impl Application {
                             || (ke.code == KeyCode::Char('c')
                                 && ke.modifiers.contains(KeyModifiers::CONTROL)) =>
                     {
-                        break;
+                        self.stop();
                     }
                     Event::Key(ke) if ke.code == KeyCode::Char('r') => {
-                        entries.clear();
+                        self.entries.clear();
                     }
                     Event::Key(ke) if ke.code == KeyCode::Char('E') => {
-                        entries.values_mut().for_each(|e| e.layout = EntryLayout::Expanded);
+                        self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Expanded);
                     }
                     Event::Key(ke) if ke.code == KeyCode::Char('C') => {
-                        entries.values_mut().for_each(|e| e.layout = EntryLayout::Condensed);
+                        self.entries.values_mut().for_each(|e| e.layout = EntryLayout::Condensed);
                     }
                     _ => {}
                 }
@@ -135,6 +142,10 @@ impl Application {
         ratatui::restore();
 
         Ok(())
+    }
+
+    pub fn stop(&mut self) {
+        self.is_running = false;
     }
 }
 
