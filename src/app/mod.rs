@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 use std::time::Duration;
 
 use anyhow::Context;
-use chrono::Local;
 use ratatui::Terminal;
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use ratatui::prelude::Backend;
@@ -10,7 +9,7 @@ use size::Size;
 use sysinfo::{ProcessRefreshKind, RefreshKind};
 
 use crate::Config;
-use crate::app::entry::{Entry, EntryLayout, EntryState};
+use crate::app::entry::{Entry, EntryLayout};
 
 mod draw;
 mod entry;
@@ -74,26 +73,16 @@ impl Application {
 
             // For a new process, we first create a new entry.
             // If we already know this process, return its entry.
-            let entry = self.entries.entry(pid).or_insert_with(|| Entry {
-                state: EntryState::Alive,
-                name: process.name().to_string_lossy().to_string(),
-                // TODO: Reconsider, bit weird but it works for what we want to do.
-                query: self.config.name.clone(),
-                pid: process.pid().as_u32(),
-                // TODO: The time stuff is a bit hastily implemented. Sit with it for a second.
-                start: Local::now().naive_local() - Duration::from_secs(process.run_time()),
-                // These we will fill in very shortly.
-                mem: Default::default(),
-                cpu: Default::default(),
-                read: Default::default(),
-                write: Default::default(),
-                layout: EntryLayout::Expanded,
-            });
+            let entry = self
+                .entries
+                .entry(pid)
+                .or_insert_with(|| Entry::new(process, self.config.name.clone()));
 
             entry.mem.push(Size::from_bytes(process.memory()));
             entry.cpu.push(process.cpu_usage() / 100.0);
             entry.read.push(Size::from_bytes(process.disk_usage().total_read_bytes));
             entry.write.push(Size::from_bytes(process.disk_usage().total_written_bytes));
+
             alive.push(pid);
         }
 

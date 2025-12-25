@@ -1,5 +1,8 @@
+use std::time::Duration;
+
 use chrono::Local;
 use size::Size;
+use sysinfo::Process;
 
 pub struct Entry {
     pub state: EntryState,
@@ -17,6 +20,23 @@ pub struct Entry {
 }
 
 impl Entry {
+    pub fn new(process: &Process, query: String) -> Self {
+        Self {
+            state: EntryState::Alive,
+            name: process.name().to_string_lossy().to_string(),
+            // TODO: Reconsider, bit weird but it works for what we want to do.
+            query,
+            pid: process.pid().as_u32(),
+            // TODO: The time stuff is a bit hastily implemented. Sit with it for a second.
+            start: Local::now().naive_local() - Duration::from_secs(process.run_time()),
+            mem: Default::default(),
+            cpu: Default::default(),
+            read: Default::default(),
+            write: Default::default(),
+            layout: EntryLayout::Expanded,
+        }
+    }
+
     pub fn name_match(&self) -> [&str; 3] {
         let (before, after) = self.name.split_once(&self.query).unwrap();
         [before, &self.query, after]
