@@ -1,9 +1,12 @@
 [package]
 name = "bovenop"
 description = "Listen and watch processes by name"
-authors = ["Marieke Westendorp <ma3ke.cyber@gmail.com>"]
+authors = [
+	"Marieke Westendorp <ma3ke.cyber@gmail.com>",
+	"Bauke Westendorp <baukewestendorp@gmail.com>"
+]
 repository = "https://github.com/ma3ke/bovenop"
-license = "GPL-3.0"
+license = "GPL-3.0-or-later"
 keywords = ["top", "tui"]
 categories = ["command-line-utilities", "development-tools"]
 version = "0.1.0"

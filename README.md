@@ -65,15 +65,30 @@ This is just a tool I wrote for myself to do a particular thing, after all :)
 
 ### Contributions
 
-I very much welcome input from people based actual needs in the form of issues,
-emails, or fedi posts. As with many of my projects, I appreciate and welcome
-code contributions, provided we have had some prior discussion about it where
-we briefly discuss the design of any non-trivial changes. Additional contact
-options can be found on my site.
+This project is created and maintained by Marieke and Bauke Westendorp.
+
+We very much welcome input from people based actual needs in the form of
+issues, emails, or fedi posts. As with many of our projects, we appreciate and
+welcome code contributions, provided we have had some prior discussion about it
+where we briefly discuss the design of any non-trivial changes. Additional
+contact options can be found on our sites.
 
 ## License
 
-This project is licensed under GPL-3.0, see LICENSE.
+Copyright &copy; 2025, Marieke Westendorp.
+Copyright &copy; 2025, Bauke Westendorp.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see https://www.gnu.org/licenses/.
 
 [image]: bovenop.png
 [thread]: https://hachyderm.io/@ma3ke/115757953511991333
