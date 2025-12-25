@@ -19,7 +19,6 @@ struct Config {
 
 fn main() -> anyhow::Result<()> {
     let config = Config::parse();
-    let mut app = Application::new(config);
-    app.start()?;
+    Application::new(config).start()?;
     Ok(())
 }
