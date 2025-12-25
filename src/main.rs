@@ -1,5 +1,7 @@
 use clap::Parser;
 
+use crate::app::Application;
+
 mod app;
 mod entry;
 
@@ -18,6 +20,7 @@ struct Config {
 
 fn main() -> anyhow::Result<()> {
     let config = Config::parse();
-    app::run(config)?;
+    let mut app = Application::new(config);
+    app.start()?;
     Ok(())
 }
